@@ -429,20 +429,47 @@ struct AddNoteView: View {
     @State private var customColorHex: String?
     @FocusState private var isTitleFocused: Bool
     @State private var customColor: Color = .black
+    @State private var showMoreOptions = false
     
     var body: some View {
         NavigationView {
-            VStack(alignment: .leading, spacing: 0) {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        NoteTitleSection(title: $title, isTitleFocused: $isTitleFocused)
-                        NoteLocationSection(location: $location)
-                        NoteDateSection(date: $date)
-                        NoteColorTagSection(colorTag: $colorTag, customColor: $customColor, customColorHex: $customColorHex)
-                        NoteContentSection(content: $content)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    // Title
+                    NoteTitleSection(title: $title, isTitleFocused: $isTitleFocused)
+                    // Content
+                    NoteContentSection(content: $content)
+                    // More Options
+                    DisclosureGroup(isExpanded: $showMoreOptions) {
+                        VStack(alignment: .leading, spacing: 16) {
+                            NoteLocationSection(location: $location)
+                            NoteDateSection(date: $date)
+                            NoteColorTagSection(colorTag: $colorTag, customColor: $customColor, customColorHex: $customColorHex)
+                        }
+                        .padding(.top, 8)
+                    } label: {
+                        Label("More Options", systemImage: "slider.horizontal.3")
+                            .font(.headline)
+                            .foregroundColor(.accentColor)
                     }
-                    .padding()
+                    .padding(.top, 8)
+                    .animation(.easeInOut, value: showMoreOptions)
+                    // Save Button
+                    Button(action: { saveNote() }) {
+                        HStack {
+                            Spacer()
+                            Text("Save")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .padding(.vertical, 12)
+                            Spacer()
+                        }
+                        .background(Color.accentColor)
+                        .cornerRadius(12)
+                    }
+                    .padding(.top, 16)
                 }
+                .padding()
             }
             .navigationTitle("New Note")
             .navigationBarTitleDisplayMode(.inline)
@@ -451,13 +478,6 @@ struct AddNoteView: View {
                     Button("Cancel") {
                         dismiss()
                     }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        saveNote()
-                    }
-                    .fontWeight(.semibold)
                 }
             }
         }
