@@ -161,7 +161,7 @@ struct NotesMainView: View {
         NavigationView {
             VStack {
                 if notesStore.notes.isEmpty {
-                    EmptyStateView()
+                    EmptyStateView(showingAddNote: $showingAddNote)
                 } else {
                     List {
                         ForEach(filteredNotes) { note in
@@ -200,6 +200,7 @@ struct NotesMainView: View {
 
 // MARK: - Empty State View
 struct EmptyStateView: View {
+    @Binding var showingAddNote: Bool
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "note.text")
@@ -215,6 +216,16 @@ struct EmptyStateView: View {
                 .font(.body)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
+            
+            Button(action: { showingAddNote = true }) {
+                Label("Add Note", systemImage: "plus")
+                    .font(.headline)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 10)
+                    .background(Color.accentColor.opacity(0.15))
+                    .cornerRadius(10)
+            }
+            .accessibilityIdentifier("addNoteButtonEmptyState")
         }
         .padding()
     }
@@ -653,7 +664,7 @@ struct NoteDetailView_Previews: PreviewProvider {
 
 struct EmptyStateView_Previews: PreviewProvider {
     static var previews: some View {
-        EmptyStateView()
+        EmptyStateView(showingAddNote: .constant(false))
     } 
 }
 
